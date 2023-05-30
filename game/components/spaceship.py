@@ -7,6 +7,8 @@ class Spaceship(Sprite):
 
     SHIP_WIDTH = 40
     SHIP_HEIGHT = 60
+    WITH = 960
+    HEIGHT = 540
     X_POS = (SCREEN_WIDTH // 2) - SHIP_WIDTH
     Y_POS = 500
     SHIP_SPEED = 10
@@ -29,20 +31,25 @@ class Spaceship(Sprite):
             self.move_down()
 
     def move_left(self):
-        if self.rect.left > 0:
-            self.rect.x -= self.SHIP_SPEED
+        self.rect.x -= self.SHIP_SPEED
+        if self.rect.left < 0:
+            self.rect.x = self.WITH  
 
     def move_right(self):
-        if self.rect.right < SCREEN_WIDTH:
-            self.rect.x += self.SHIP_SPEED
+        self.rect.x += self.SHIP_SPEED
+        if self.rect.right > SCREEN_WIDTH:
+            self.rect.x = 0
 
     def move_up(self):
-        if self.rect.y > SCREEN_HEIGHT // 2 :
-            self.rect.y -= self.SHIP_SPEED
+        self.rect.y -= self.SHIP_SPEED
+        if self.rect.y < 0:
+            self.rect.y = self.HEIGHT
 
-    def move_down(self):
-        if self.rect.y < SCREEN_HEIGHT - self.SHIP_HEIGHT:
-            self.rect.y += self.SHIP_SPEED    
+    def move_down(self): 
+        self.rect.y += self.SHIP_SPEED  
+        if self.rect.y >= self.HEIGHT:
+            self.rect.y = 0
+
 
     def draw(self, screen):
         screen.blit(self.image, (self.rect.x, self.rect.y))
