@@ -15,11 +15,13 @@ class BulletManager:
                 self.enemy_bullets.remove(bullet)
                 game.death_count += 1
                 game.playing = False
+
         for bullet in self.bullets:
-            bullet.update(self.bullets)
-            if bullet.rect.colliderect(self.ENEMY.rect) and bullet.owner =='player':
-                bullet.owner =='player'
+            bullet.update(self.bullets)        
+        for enemy in game.enemy_manager.enemies:        
+            if bullet.rect.colliderect(enemy.rect) and bullet.owner =='player':
                 game.update_score()
+                game.enemy_manager.enemies.remove(enemy)
                 self.bullets.remove(bullet)
         
     def draw(self, screen):
@@ -28,11 +30,12 @@ class BulletManager:
         for bullet in self.bullets:
             bullet.draw(screen)
 
-    def add_bullet(self, bullet):
-        if bullet.owner == 'enemy' and len (self.enemy_bullets) < 1:
-            self.enemy_bullets.append(bullet)
+    def add_bullet(self, bullet): 
         if bullet.owner == 'player':
             self.bullets.append(bullet)
+        if bullet.owner == 'enemy' and len (self.enemy_bullets) < 1:
+            self.enemy_bullets.append(bullet)
+       
 
     def reset(self):
         self.bullets = []

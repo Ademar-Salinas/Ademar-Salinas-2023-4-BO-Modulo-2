@@ -1,6 +1,6 @@
 import pygame
 
-from game.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, DEFAULT_TYPE, FONT_STYLE
+from game.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, FONT_STYLE
 from game.components.spaceship import Spaceship
 from game.components.enemies.enemy_manager import EnemyManager
 from game.components.bullets.bullet_manager import BulletManager
@@ -21,10 +21,11 @@ class Game:
         self.y_pos_bg = 0
         self.death_count = 0
         self.score = 0
+        self.old_score = 0
         self.player = Spaceship()
         self.enemy_manager = EnemyManager()
         self.bullet_manager = BulletManager()
-        self.menu = Menu('Press Any Key To Start...', self.screen)
+        self.menu = Menu('Press Any Key To Start...',f'Your Score: 00{self.score}', f'Total deaths: {self.death_count}', f'Highest score: 00{self.old_score}', self.screen)
 
     def execute(self):
         self.running  = True
@@ -80,22 +81,28 @@ class Game:
         half_screen_width = SCREEN_WIDTH // 2
         half_screen_height = SCREEN_HEIGHT // 2
         self.menu.reset_screen_color(self.screen)
+        
 
         if self.death_count > 0:
-            self.menu.update_message('New Message')
+            self.menu.update_message('Game Over. Press any key to restart', f'Your score: 00{self.score}', f'Total deaths: {self.death_count}',  f'Highest score: 00{self.old_score}')
+            #self.update_message_score()
         
         icon = pygame.transform.scale(ICON, (80, 120))
         self.screen.blit(icon, (half_screen_width - 50, half_screen_height - 150))
 
         self.menu.draw(self.screen)
         self.menu.update(self)
-    
+
     def update_score(self):
         self.score += 1
 
     def draw_score(self):
+        if (self.old_score < self.score):
+            self.old_score = self.score
         font = pygame.font.Font(FONT_STYLE, 30)
         text = font.render(f'Score {self.score}', True, (255, 255, 255))
         text_rect = text.get_rect()
         text_rect.center = (900, 50)
         self.screen.blit(text, text_rect)
+    #def update_message_score(self):
+     #   self.menu.message_game_over(self, f'You Score: {self.score}')

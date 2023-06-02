@@ -65,3 +65,7 @@ class Spaceship(Sprite):
     def shoot(self, bullet_manager):
         bullet = Bullet(self)
         bullet_manager.add_bullet(bullet)
+
+    def reset(self):
+        self.X_POS
+        self.rect.y = self.Y_POS    
