@@ -1,6 +1,6 @@
 import pygame
 from pygame.sprite import Sprite
-from game.utils.constants import SPACESHIP, SCREEN_WIDTH, SCREEN_HEIGHT, DEFAULT_TYPE
+from game.utils.constants import SPACESHIP, SCREEN_WIDTH, SCREEN_HEIGHT, DEFAULT_TYPE, LASER_SOUND
 from game.components.bullets.bullet import Bullet
 
 class Spaceship(Sprite):
@@ -27,7 +27,7 @@ class Spaceship(Sprite):
             self.move_left()
             if user_input[pygame.K_w]:
                 self.move_up() 
-            elif user_input[pygame.K_w]:
+            elif user_input[pygame.K_s]:
                 self.move_down()
         elif user_input[pygame.K_d]:
             self.move_right()
@@ -40,7 +40,8 @@ class Spaceship(Sprite):
         elif user_input[pygame.K_s]:
             self.move_down()
         if user_input[pygame.K_LEFT]:
-            self.shoot(game.bullet_manager)    
+            self.shoot(game.bullet_manager) 
+            pygame.mixer.Sound.play(LASER_SOUND)   
        
 
     def move_left(self):

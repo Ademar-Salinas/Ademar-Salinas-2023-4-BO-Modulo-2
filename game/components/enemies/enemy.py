@@ -32,16 +32,14 @@ class Enemy(Sprite):
     def level_enemy(self):
         if (self.NUMBER_ENEMY == 0):
             self.image = ENEMY_1
-            self.image = pygame.transform.scale(self.image, (40, 60))
-            self.rect = self.image.get_rect()
             self.speed_y = self.SPEED_Y
-            self.type = 'enemy'
         elif (self.NUMBER_ENEMY == 1):
             self.image = ENEMY_2
-            self.image = pygame.transform.scale(self.image, (40, 60))
-            self.rect = self.image.get_rect()
             self.speed_y = random.choice((6, 7))   
-            self.type = 'enemy'
+        
+        self.image = pygame.transform.scale(self.image, (40, 60))  
+        self.rect = self.image.get_rect()  
+        self.type = 'enemy'
 
     def update(self, ships, game):
         self.rect.y += self.speed_y

@@ -1,5 +1,7 @@
+import pygame
 import random
 from game.components.enemies.enemy import Enemy
+from game.utils.constants import BURST_TYPE
 
 class EnemyManager:
     def __init__(self):
@@ -9,7 +11,11 @@ class EnemyManager:
     def update(self, game):
         self.add_enemy()
         for enemy in self.enemies:
-            enemy.update(self.enemies, game)
+            if game.player.power_up_type != BURST_TYPE:
+                enemy.update(self.enemies, game)
+            else:
+                self.enemies = []
+                
 
 
     def draw(self, screen):

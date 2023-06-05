@@ -1,11 +1,12 @@
 import pygame
 
-from game.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, FONT_STYLE, DEFAULT_TYPE
+from game.utils.constants import BG, ICON, GAMEOVER, START, RESET, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, FONT_STYLE, DEFAULT_TYPE
 from game.components.spaceship import Spaceship
 from game.components.enemies.enemy_manager import EnemyManager
 from game.components.bullets.bullet_manager import BulletManager
 from game.components.menu import Menu
 from game.components.powerups.power_up_manager import PowerUpManager
+from game.components.volumen import Volumen
 
 
 class Game:
@@ -26,11 +27,13 @@ class Game:
         self.player = Spaceship()
         self.enemy_manager = EnemyManager()
         self.bullet_manager = BulletManager()
-        self.menu = Menu('Press Any Key To Start...',f'Your Score: 00{self.score}', f'Total deaths: {self.death_count}', f'Highest score: 00{self.best_score}', self.screen)
+        self.menu = Menu(self.screen)
         self.power_up_manager = PowerUpManager()
+        self.volumen = Volumen()
 
     def execute(self):
         self.running  = True
+        Volumen()
         while self.running:
             if not self.playing:
                 self.show_men()
@@ -40,7 +43,7 @@ class Game:
     def run(self):
         # Game loop: events - update - draw
         self.score = 0
-        self.enemy_manager.reset()
+        self.reset()
         self.playing = True
         while self.playing:
             self.events()
@@ -55,9 +58,11 @@ class Game:
     def update(self):
         user_input = pygame.key.get_pressed()
         self.player.update(user_input, self)
+        self.volumen.update(user_input)
         self.enemy_manager.update(self)
         self.bullet_manager.update(self)
         self.power_up_manager.update(self)
+        
         
     def draw(self):
         self.clock.tick(FPS)
@@ -88,37 +93,50 @@ class Game:
         self.menu.reset_screen_color(self.screen)
         
 
-        if self.death_count > 0:
-            self.menu.update_message('Game Over. Press any key to restart', f'Your score: 00{self.score}', f'Total deaths: {self.death_count}',  f'Highest score: 00{self.best_score}')
-            #self.update_message_score()
-        
-        icon = pygame.transform.scale(ICON, (80, 120))
-        self.screen.blit(icon, (half_screen_width - 50, half_screen_height - 150))
+        if self.death_count == 0:
+            self.menu.draw(self.screen, 'Press any key to start ...')
+            icon_1 = pygame.transform.scale(ICON, (80, 120))
+            self.screen.blit(icon_1, (half_screen_width - 50, half_screen_height - 150))
+            icon_2 = pygame.transform.scale(START, (300, 120))
+            self.screen.blit(icon_2, (half_screen_width - 150, half_screen_height + 80))
+        else:
+            self.best_scores()
+            self.menu.draw(self.screen, 'Game Over. Press any key to restart')
+            self.menu.update_message(f'Your score: {str(self.score).zfill(3)}', f'Total deaths: {self.death_count}',  f'Highest score: {str(self.best_score).zfill(3)}', self.screen)
+            icon_1 = pygame.transform.scale(GAMEOVER, (410, 120))
+            self.screen.blit(icon_1, (half_screen_width - 200, half_screen_height - 130))
+            icon_2 = pygame.transform.scale(RESET, (80, 120))
+            self.screen.blit(icon_2, (half_screen_width - 50, half_screen_height + 160))
 
-        self.menu.draw(self.screen, 'Press any key to Start...')
+        
         self.menu.update(self)
 
     def update_score(self):
         self.score += 1
 
     def draw_score(self):
-        if (self.best_score < self.score):
-            self.best_score = self.score
         font = pygame.font.Font(FONT_STYLE, 30)
-        text = font.render(f'Score {self.score}', True, (255, 255, 255))
+        text = font.render(f'Score {str(self.score).zfill(4)}', True, (255, 255, 255))
         text_rect = text.get_rect()
         text_rect.center = (900, 50)
         self.screen.blit(text, text_rect)
 
-        #self.player.reset()
-        #self.power_up_manager.reset()
+    def reset(self):
+        self.bullet_manager.reset()
+        self.enemy_manager.reset()
+        self.player.reset()
+        self.power_up_manager.reset()
 
     def draw_power_up_time(self):
         if self.player.has_power_up:
-            time_to_show = round((self.player.power_time_up - pygame.time.get_ticks())/1000, 2)
+            time_to_show = round((self.player.power_time_up - pygame.time.get_ticks())/1000, 1)
             if time_to_show >= 0:
                 self.menu.draw(self.screen, f'{self.player.power_up_type.capitalize()} is enabled for {time_to_show} seconds',540, 50,(255, 255, 255))
             else:
                 self.player.has_power_up = False
                 self.player.power_up_type = DEFAULT_TYPE
                 self.player.set_image()
+
+    def best_scores(self):
+        if (self.best_score < self.score):
+            self.best_score = self.score

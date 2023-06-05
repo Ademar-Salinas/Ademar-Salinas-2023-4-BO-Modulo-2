@@ -1,7 +1,7 @@
 import pygame
 
 from game.components.enemies.enemy import Enemy
-from game.utils.constants import SHIELD_TYPE
+from game.utils.constants import SHIELD_TYPE, BURST_ENEMY_SOUND
 
 class BulletManager:
     ENEMY = Enemy()
@@ -26,6 +26,7 @@ class BulletManager:
         for enemy in game.enemy_manager.enemies:        
             if bullet.rect.colliderect(enemy.rect) and bullet.owner =='player':
                 game.update_score()
+                pygame.mixer.Sound.play(BURST_ENEMY_SOUND) 
                 game.enemy_manager.enemies.remove(enemy)
                 self.bullets.remove(bullet)
         
